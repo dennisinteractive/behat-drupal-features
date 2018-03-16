@@ -5,7 +5,7 @@ Provides steps to check Features
 ## Usage
 
 ### In behat.yml:
-Add the context under contexts: `DennisDigital\Behat\DrupalFeatures\Context`
+Add the context under contexts: `DennisDigital\Behat\DrupalFeatures\Context\DrupalFeaturesContext`
 
 ### Steps
 `Given Features are in a default state`

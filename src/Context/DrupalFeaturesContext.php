@@ -1,7 +1,6 @@
 <?php
 namespace DennisDigital\Behat\DrupalFeatures\Context;
 
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Testwork\Hook\HookDispatcher;
 use Drupal\DrupalDriverManager;
 use Drupal\DrupalExtension\Context\DrupalAwareInterface;
@@ -12,13 +11,6 @@ class DrupalFeaturesContext implements DrupalAwareInterface {
    * @var DrupalDriverManager
    */
   private $drupal;
-
-  /**
-   * The environment obtained for the before scenario scope.
-   *
-   * @var BeforeScenarioScope
-   */
-  private $environment;
 
   /**
    * @var HookDispatcher
@@ -73,7 +65,7 @@ class DrupalFeaturesContext implements DrupalAwareInterface {
     }
     if (!empty($overridden)) {
       $messages = array(
-        'The following modules are either overridden or need review:',
+        'The following Features are either overridden or need review:',
         $this->getFeatureListOutput($overridden),
       );
       throw new \Exception(implode(PHP_EOL, $messages) . PHP_EOL);
@@ -92,20 +84,20 @@ class DrupalFeaturesContext implements DrupalAwareInterface {
       $state = '';
       switch ($feature['state']) {
         case FEATURES_OVERRIDDEN:
-          $state = 'Overridden';
+          $state = '(Overridden)';
           break;
         case FEATURES_NEEDS_REVIEW:
-          $state = 'Needs review';
+          $state = '(Needs review)';
           break;
       }
-      $lines[] = ' - ' . $feature['name'] . ' (' . $state . ')' . $features['state'];
+      $lines[] = ' - ' . $feature['feature'] . ' ' . $state;
     }
 
     return implode(PHP_EOL, $lines);
   }
 
   /**
-   * Get list of Features and their status.
+   * Get list of enabled Features and their state.
    *
    * @return array
    */
