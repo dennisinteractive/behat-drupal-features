@@ -4,6 +4,7 @@ namespace DennisDigital\Behat\DrupalFeatures\Context;
 use Behat\Testwork\Hook\HookDispatcher;
 use Drupal\DrupalDriverManager;
 use Drupal\DrupalExtension\Context\DrupalAwareInterface;
+use Drupal\DrupalUserManagerInterface;
 
 class DrupalFeaturesContext implements DrupalAwareInterface {
 
@@ -49,7 +50,19 @@ class DrupalFeaturesContext implements DrupalAwareInterface {
   public function setDrupalParameters(array $parameters) {
     $this->parameters = $parameters;
   }
-
+  
+  /**
+   * @inheritdoc
+   */
+  public function setUserManager(DrupalUserManagerInterface $userManager) {
+  }
+  
+  /**
+   * @inheritdoc
+   */
+  public function getUserManager() {
+  }
+  
   /**
    * @Given Features are in a default state
    */
