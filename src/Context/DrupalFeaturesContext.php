@@ -1,67 +1,9 @@
 <?php
 namespace DennisDigital\Behat\DrupalFeatures\Context;
 
-use Behat\Testwork\Hook\HookDispatcher;
-use Drupal\DrupalDriverManager;
-use Drupal\DrupalExtension\Context\DrupalAwareInterface;
-use Drupal\DrupalUserManagerInterface;
+use Drupal\DrupalExtension\Context\RawDrupalContext;
 
-class DrupalFeaturesContext implements DrupalAwareInterface {
-
-  /**
-   * @var DrupalDriverManager
-   */
-  private $drupal;
-
-  /**
-   * @var HookDispatcher
-   */
-  private $dispatcher;
-
-  /**
-   * @var array
-   */
-  private $parameters;
-
-  /**
-   * @inheritDoc
-   */
-  public function setDispatcher(HookDispatcher $dispatcher) {
-    $this->dispatcher = $dispatcher;
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public function getDrupal() {
-    return $this->drupal;
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public function setDrupal(DrupalDriverManager $drupal) {
-    $this->drupal = $drupal;
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public function setDrupalParameters(array $parameters) {
-    $this->parameters = $parameters;
-  }
-  
-  /**
-   * @inheritdoc
-   */
-  public function setUserManager(DrupalUserManagerInterface $userManager) {
-  }
-  
-  /**
-   * @inheritdoc
-   */
-  public function getUserManager() {
-  }
+class DrupalFeaturesContext extends RawDrupalContext {
   
   /**
    * @Given Features are in a default state
@@ -115,7 +57,7 @@ class DrupalFeaturesContext implements DrupalAwareInterface {
    * @return array
    */
   protected function getFeaturesList() {
-    $this->drupal->getDriver('drupal');
+    $this->getDrupal()->getDriver('drupal');
 
     module_load_include('inc', 'features', 'features.export');
 
