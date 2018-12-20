@@ -4,19 +4,7 @@ namespace DennisDigital\Behat\DrupalFeatures\Context;
 use Drupal\DrupalExtension\Context\RawDrupalContext;
 
 class DrupalFeaturesContext extends RawDrupalContext {
-
-  /**
-   * Exclude components with known issues.
-   *
-   * @var array
-   */
-  protected $exclusions = array(
-    'taxonomy' => array(
-      'hierarchy',
-    ),
-    'info' => array(),
-  );
-
+  
   /**
    * @Given Features are in a default state
    */
@@ -26,9 +14,7 @@ class DrupalFeaturesContext extends RawDrupalContext {
       switch ($feature['state']) {
         case FEATURES_OVERRIDDEN:
         case FEATURES_NEEDS_REVIEW:
-          if ($feature['components'] = $this->getOverriddenComponents($feature['module'])) {
-            $overridden[] = $feature;
-          }
+          $overridden[] = $feature;
           break;
       }
     }
@@ -60,11 +46,6 @@ class DrupalFeaturesContext extends RawDrupalContext {
           break;
       }
       $lines[] = ' - ' . $feature['feature'] . ' ' . $state;
-      if (!empty($feature['components'])) {
-        foreach ($feature['components'] as $component) {
-          $lines[] = '    - ' . $component;
-        }
-      }
     }
 
     return implode(PHP_EOL, $lines);
@@ -93,48 +74,9 @@ class DrupalFeaturesContext extends RawDrupalContext {
           'status' => $m->status ? t('Enabled') : t('Disabled'),
           'version' => $m->info['version'],
           'state' => features_get_storage($m->name),
-          'module' => $m,
         );
       }
     }
     return $rows;
-  }
-
-  /**
-   * Get array of overridden components.
-   *
-   * @param $module
-   *
-   * @return array
-   */
-  protected function getOverriddenComponents($module) {
-    module_load_include('inc', 'features', 'features.export');
-    module_load_include('inc', 'diff', 'diff.engine');
-
-    $formatter = new \DiffFormatter();
-    $formatter->leading_context_lines = 0;
-    $formatter->trailing_context_lines = 0;
-    $formatter->show_header = FALSE;
-
-    $components = array();
-
-    foreach (features_detect_overrides($module) as $component => $items) {
-      if (isset($this->exclusions[$component]) && empty($this->exclusions[$component])) {
-        continue;
-      }
-
-      $diff = new \Diff(explode("\n", $items['default']), explode("\n", $items['normal']));
-      if (isset($this->exclusions[$component])) {
-        foreach ($this->exclusions[$component] as $pattern) {
-          if (preg_match('/' . preg_quote($pattern) . '/', $formatter->format($diff))) {
-            continue 2;
-          }
-        }
-      }
-
-      $components[] = $component;
-    }
-
-    return $components;
   }
 }
