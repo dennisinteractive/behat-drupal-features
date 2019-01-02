@@ -2,8 +2,16 @@
 namespace DennisDigital\Behat\DrupalFeatures\Context;
 
 use Drupal\DrupalExtension\Context\RawDrupalContext;
+use Behat\Testwork\Call\Exception\CallErrorException;
 
 class DrupalFeaturesContext extends RawDrupalContext {
+
+  /**
+   * Catchable errors that occurred when checking features.
+   *
+   * @var array
+   */
+  private $errors = array();
 
   /**
    * Exclude components with known issues.
@@ -67,6 +75,14 @@ class DrupalFeaturesContext extends RawDrupalContext {
       }
     }
 
+    // Append caught errors.
+    if (count($this->errors)) {
+      $lines[] = PHP_EOL . 'Errors:';
+      foreach ($this->errors as $error) {
+        $lines[] = '    - ' . $error;
+      }
+    }
+
     return implode(PHP_EOL, $lines);
   }
 
@@ -118,7 +134,16 @@ class DrupalFeaturesContext extends RawDrupalContext {
 
     $components = array();
 
-    foreach (features_detect_overrides($module) as $component => $items) {
+    // Suppress errors during feature override detection, to be reported later.
+    try {
+      $detected_overrides = features_detect_overrides($module);
+    }
+    catch (CallErrorException $e) {
+      $this->errors[] = $e->getMessage();
+      return $components;
+    }
+
+    foreach ($detected_overrides as $component => $items) {
       if (isset($this->exclusions[$component]) && empty($this->exclusions[$component])) {
         continue;
       }
